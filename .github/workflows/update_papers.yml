@@ -1,0 +1,30 @@
+name: SLAM论文列表自动更新  # 工作流名称（自定义）
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 核心：定时触发规则（UTC时间每天0点执行）
+  workflow_dispatch:     # 允许手动触发（可选但推荐）
+
+jobs:
+  update-paper-list:
+    runs-on: ubuntu-latest  # 运行环境（Ubuntu系统）
+    
+    steps:
+      # 步骤1：检出仓库代码（必须）
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 拉取完整提交历史（避免遗漏已处理仓库记录）
+
+      # 步骤2：安装Python依赖（根据脚本需求调整）
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests  # 脚本需要的HTTP库
+
+      # 步骤3：运行更新脚本（核心）
+      - name: Run update script
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # 从Secrets获取PAT
+        run: |
+          python slam_paper_daily_update.py  # 执行你的脚本（确保脚本在仓库根目录）
